@@ -5,3 +5,8 @@
 .slider.slider-horizontal {
     width : 110px;
 }
+
+.btn-group-top > button {
+    height: 50px;
+    width : 120px;
+}
