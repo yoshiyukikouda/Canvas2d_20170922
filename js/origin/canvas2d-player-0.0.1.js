@@ -3,7 +3,7 @@
 /// Canvas2d 動画再生・加工用 JavaScript
 /// </summary>
 /// <remarks>
-/// 7.0.0   2017/09/21 KOUDA 新規作成 
+/// 0.0.1   2017/09/21 KOUDA 新規作成 
 /// </remarks>
 //****************************************************************************************
 
@@ -175,17 +175,6 @@ var image_convert = (function() {
                 _PixelData[i + 0] = 255 - r;
                 _PixelData[i + 1] = 255 - g;
                 _PixelData[i + 2] = 255 - b;
-            }
-            _Canvas2d_Context.putImageData(_ImageData, 0, 0);
-        })(); 
-    }
-    // ストレッチ
-    this.onStretch = function() {
-        resize();
-        mode = "stretch";
-        (function mov() {
-            if (mode == "stretch") {
-                requestAnimationFrame(mov);
             }
             _Canvas2d_Context.putImageData(_ImageData, 0, 0);
         })(); 
