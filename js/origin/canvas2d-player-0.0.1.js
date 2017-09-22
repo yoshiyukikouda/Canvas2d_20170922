@@ -3,7 +3,7 @@
 /// Canvas2d 動画再生・加工用 JavaScript
 /// </summary>
 /// <remarks>
-/// 0.0.1   2017/09/21 KOUDA 新規作成 
+/// 0.0.1   2017/09/21 yoshiyuki kouda 新規作成 
 /// </remarks>
 //****************************************************************************************
 
@@ -116,6 +116,7 @@ var image_convert = (function() {
         mode = "";
     }
     // ガンマ補正
+    //TODO 正常に実装できてない
     this.onGanma = function(ganma) {
         resize();
         mode = "ganma";
@@ -132,6 +133,7 @@ var image_convert = (function() {
         })(); 
     }
     // コントラスト
+    //TODO 正常に実装できてない
     this.onContrast = function(contrast) {
         resize();
         mode = "contrast";
@@ -148,6 +150,7 @@ var image_convert = (function() {
         })(); 
     }
     // ブライトネス
+    //TODO 正常に実装できてない
     this.onBrightness = function(brightness) {
         resize();
         mode = "brightness";
@@ -160,7 +163,7 @@ var image_convert = (function() {
             _Canvas2d_Context.putImageData(_ImageData, 0, 0);
         })(); 
     }
-    // ネガポジ反転（色の反転）
+    // ネガポジ反転
     this.onNegapoji = function() {
         resize();
         mode = "negapoji";
@@ -179,7 +182,7 @@ var image_convert = (function() {
             _Canvas2d_Context.putImageData(_ImageData, 0, 0);
         })(); 
     }
-    // 初期値に戻す
+    // 初期化
     this.onInitialize = function(){
         resize();
         _Rotate = 0;
@@ -187,19 +190,9 @@ var image_convert = (function() {
         _VerticalFlip = 1;
         _Canvas2d_Context.putImageData(_ImageData, 0, 0);
     }
-    // 自動適用
-    this.onAutoApply = function() {
-        resize();
-        mode = "autoapply";
-        (function mov() {
-            if (mode == "autoapply") {
-                requestAnimationFrame(mov);
-            }
-            _Canvas2d_Context.putImageData(_ImageData, 0, 0);
-        })(); 
-    }
     // 水平フリップ
     this.onHorizontalFlip = function() {
+        //TODO 描写のリセットをしてないため、処理前の画像が残る
         //resize();
         mode = "horizontalflip";
         //TODO リセットを除外しているので数値反転は一旦コメントアウト
@@ -220,6 +213,7 @@ var image_convert = (function() {
     }
     // 垂直フリップ
     this.onVerticalFlip = function() {
+        //TODO 描写のリセットをしてないため、処理前の画像が残る
         //resize();
         mode = "verticalflip";
         //TODO リセットを除外しているので数値反転は一旦コメントアウト
@@ -239,6 +233,7 @@ var image_convert = (function() {
     }
     // 90°回転
     this.onRotate90 = function() {
+        //TODO 描写のリセットをしてないため、処理前の画像が残る
         //resize();
         mode = "rotate90";
         _Rotate += 90;
@@ -259,7 +254,7 @@ var image_convert = (function() {
     }
     // エッジ検出
     //TODO 正常に実装できてない
-    this.onEdgeDetector = function() {
+    this.onEdgeDetector = function(edge_type) {
         resize();
         mode = "edge";
         (function mov() {
@@ -276,7 +271,6 @@ var image_convert = (function() {
             _Canvas2d_Context.putImageData(_ImageData, 0, 0);
         })(); 
     }
-    //TODO 以下、非表示
     // グレースケール
     this.onGrayScale = function() {
         resize();
