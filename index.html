@@ -1,0 +1,415 @@
+<!--
+//****************************************************************************************
+/// <summary>
+/// Canvas2d 動画再生・加工用 JavaScript
+/// </summary>
+/// <remarks>
+/// 0.0.1   2017/09/21 KOUDA 新規作成 
+/// </remarks>
+//****************************************************************************************
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8;"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<!-- StyleSheet -->
+        <link rel ="stylesheet" media="all" type="text/css" href ="content/css/vendor/bootstrap.min.css">
+        <link rel ="stylesheet" media="all" type="text/css" href ="content/css/vendor/bootstrap-slider.min.css">
+        <link rel ="stylesheet" media="all" type="text/css" href ="content/css/vendor/bootstrap-sticky-footer.css">
+        <link rel ="stylesheet" media="all" type="text/css" href ="content/css/origin/common.css">
+        <title>Canvas2d Viewer</title>
+    </head>
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">Canvas2d Viewer</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#nav_content" aria-expanded="false" aria-controls="nav_content" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="nav_content" class="collapse navbar-collapse">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a id="link_nav_ajustments" class="nav-link active">画質調整</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header><!-- end header -->
+        <div id="main" class="container-fluid" style="padding-top: 60px;"><!--TOOD mainタグに置き換える -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="group_controlls" class="card">
+                        <div id="group_ctrl_ajustments_controlls" class="card-block">
+                            <label class="label">エッジ
+                                <input id="num_edge" class="form-control form-control-sm" type="number" value="0" size="3" />
+                                <input id="txt_edge" class="bootstrap-slider" type="text" data-slider-id="slider_edge" data-slider-min="0" data-slider-max="5" data-slider-step="0.01" data-slider-value="0" />
+                            </label>
+                            <label class="label">ガンマ補正
+                                <input id="num_ganma" class="form-control form-control-sm" type="number" value="1" size="3" />
+                                <input id="txt_ganma" class="bootstrap-slider" type="text" data-slider-id="slider_ganma" data-slider-min="0" data-slider-max="5" data-slider-step="0.01" data-slider-value="1" />
+                            </label>
+                            <label class="label">コントラスト
+                                <input id="num_contrast" class="form-control form-control-sm" type="number" value="1" size="3" />
+                                <input id="txt_contrast" class="bootstrap-slider" type="text" data-slider-id="slider_contrast" data-slider-min="0" data-slider-max="5" data-slider-step="0.01" data-slider-value="1" />
+                            </label>
+                            <label class="label">ブライトネス
+                                <input id="num_brightness" class="form-control form-control-sm" type="number" value="1" size="3" />
+                                <input id="txt_brightness" class="bootstrap-slider" type="text" data-slider-id="slider_brightness" data-slider-min="-255" data-slider-max="255" data-slider-step="1" data-slider-value="1" />
+                            </label>
+                            <label class="label">ズーム
+                                <input id="num_zoom" class="form-control form-control-sm" type="number" value="1" size="3" />
+                                <input id="txt_zoom" class="bootstrap-slider" type="text" data-slider-id="slider_zoom" data-slider-min="0.01" data-slider-max="10" data-slider-step="0.01" data-slider-value="1" />
+                            </label>
+                        </div>
+                        <div id="group_ctrl_ajustments_buttons" class="card-block">
+                            <div class="btn-group btn-group-top">
+                                <button class="btn btn-sm btn-light" id="btn_initialize">初期化</button>
+                            </div>
+                            <div class="btn-group btn-group-top">
+                                <button class="btn btn-sm btn-light" id="btn_negapoji">ネガポジ反転</button>
+                                <button class="btn btn-sm btn-light" id="btn_grayscale">グレースケール</button>
+                                <button class="btn btn-sm btn-light" id="btn_sepia">セピア</button>
+                            </div>
+                            <div class="btn-group btn-group-top">
+                                <button class="btn btn-sm btn-light" id="btn_horizontal_flip">水平フリップ</button>
+                                <button class="btn btn-sm btn-light" id="btn_vertical_flip">垂直フリップ</button>
+                                <button class="btn btn-sm btn-light" id="btn_rotate90">回転</button>
+                            </div>
+                            <div class="btn-group btn-group-top">
+                                <button class="btn btn-sm btn-light" id="btn_edge">エッジ</button>
+                            </div>
+                        </div><!-- end group_ajastment -->
+                    </div><!-- end group_controlls -->
+                </div><!-- end col -->
+            </div><!-- end row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="group_viewers" class="bg-dark">
+                        <div id="group_video" class="text-center d-none">
+                            <video id="video_video" controls autoplay>
+                                <source src="content/mp4/20170530_03.mp4" />empty
+                                <p id="video_info">動画を再生するには、videoタグをサポートしたブラウザが必要です。</p>
+                            </video>
+                        </div><!-- end group_video -->
+                        <div id="group_canvas" class="text-center">
+                            <canvas id="canvas_video">empty</canvas>
+                            <canvas id="canvas_painter">empty</canvas>
+                            <div id="group_paitermenu">
+                                <div class="painter-menuicon" id="painter_clear">×</div>
+                                <div class="painter-menuicon" id="painter_eraser">消</div>
+                                <div class="painter-menuicon" id="painter_size21">21</div>
+                                <div class="painter-menuicon" id="painter_size14">14</div>
+                                <div class="painter-menuicon" id="painter_size7">7</div>
+                                <div class="painter-menuicon" id="painter_size3">3</div>
+                                <div class="painter-menuicon" id="painter_colore91e63"></div>
+                                <div class="painter-menuicon" id="painter_colorffeb3b"></div>
+                                <div class="painter-menuicon" id="painter_colorff4801"></div>
+                                <div class="painter-menuicon" id="painter_color536dfe"></div>
+                                <div class="painter-menuicon" id="painter_color009688"></div>
+                                <div class="painter-menuicon" id="painter_color00e676"></div>
+                                <div class="painter-menuicon" id="painter_color555555"></div>
+                                <div class="painter-menuicon" id="painter_alpha10">10</div>
+                                <div class="painter-menuicon" id="painter_alpha6">6</div>
+                                <div class="painter-menuicon" id="painter_alpha3">3</div>
+                                <div class="painter-menuicon" id="painter_alpha1">1</div>
+                            </div>
+                        </div><!-- end group_canvas -->
+                        <div id="group_players" class="form-group text-center">
+                            <button class="btn btn-md btn-light" id="btn_loop">Loop</button>
+                            <div class="btn-group">
+                                <button class="btn btn-md btn-light" id="btn_rewindfirst">&lt;&lt;</button>
+                                <button class="btn btn-md btn-light" id="btn_fowardlast">&gt;&gt;</button>  
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-md btn-secondary" id="btn_stop">□</button>
+                                <button class="btn btn-md btn-primary" id="btn_start">▷</button>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-md btn-light" id="btn_next_frame">◁</button>
+                                <!-- TODO 最大値はフレーム数にする必要あり -->
+                                <input id="txt_now_frame" class="bootstrap-slider" type="text" data-slider-id="slider_now_frame" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="0" />
+                                <button class="btn btn-md btn-light" id="btn_prev_frame">▷</button>
+                            </div>
+                        </div><!-- end group_player -->
+                    </div><!-- end group_viewers -->
+                </div><!-- end col -->
+            </div><!-- end row -->
+        </div><!-- end main -->
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="text-muted text-right">© 2017 yoshiyuki kouda</div>
+            </div>
+        </footer><!-- end footer -->
+<!-- javaScript -->
+        <script src="script/vendor/jquery-3.2.1.min.js"></script>
+        <script src="script/vendor/tether.min.js"></script>
+        <script src="script/vendor/bootstrap.min.js"></script>
+        <script src="script/vendor/bootstrap-slider.min.js"></script>
+        <script src="script/origin/canvas2d-player-0.0.1.js"></script>
+        <script src="script/origin/canvas2d-painter-0.0.1.js"></script>
+        <script>
+            /*  *
+             * ドキュメント読み込み直後に処理する
+             *  */
+            $(document).ready(function() {
+                // スライダーバー実装
+                $(".bootstrap-slider").slider({
+                    tooltip: "always"
+                });
+
+                // 動画の初期化
+                onInitializeVideo("video_video", "canvas_video");
+
+                //TODO 動画のメタ情報が読み込み完了になるまで時間が掛かる。ステータスで取得して判断できると良いけど、一旦この形
+                setTimeout(function(){
+                    // 動画の読込
+                    onLoadVideo(_Video.videoWidth, _Video.videoHeight, 30);
+
+                    // ペインターの初期化
+                    onInitializePainter("canvas_painter", _Video.videoWidth, _Video.videoHeight);
+
+                    // ウィンドウサイズに合わせてコンテナー等のサイジング
+                    $(window).resize();
+                }, 2000);
+            })
+
+/* 動画コントロール */
+            /// <summary>
+            /// 最初に巻戻し
+            /// </summary>
+            .on("click", "#btn_rewindfirst", function(){
+                video_player.onRewindFirst();
+            })
+            /// <summary>
+            /// 最後に早送り
+            /// </summary>
+            .on("click", "#btn_fowardlast", function(){
+                video_player.onFowardLast();
+            })
+            /// <summary>
+            /// 再生
+            /// </summary>
+            .on("click", "#btn_start", function(){
+                video_player.onStart();
+            })
+            /// <summary>
+            /// 停止
+            /// </summary>
+            .on("click", "#btn_stop", function(){
+                video_player.onStop();
+            })
+
+/* 画像変換 */
+            /// <summary>
+            /// エッジ
+            /// </summary>
+            .on("blur", "#num_edge", function() {
+                image_convert.onEdge($("#num_edge").val()); 
+            })
+            /// <summary>
+            /// ガンマ補正
+            /// </summary>
+            .on("blur", "#num_ganma", function() {
+                image_convert.onGanma($("#num_ganma").val()); 
+            })
+            /// <summary>
+            /// コントラスト
+            /// </summary>
+            .on("blur", "#num_contrast", function(){
+                image_convert.onContrast($("#num_contrast").val()); 
+            })
+            /// <summary>
+            /// ブライトネス
+            /// </summary>
+            .on("blur", "#num_brightness", function(){
+                image_convert.onBrightness($("#num_brightness").val()); 
+            })
+            /// <summary>
+            /// ズーム
+            /// </summary>
+            .on("blur", "#num_zoom", function() {
+                image_showing.onZoom($("#num_zoom").val()); 
+            })
+            /// <summary>
+            /// スライダー動作
+            /// </summary>
+            .on("slide", "[id^='slider_']", function(e) {
+                var id = $(this).attr("id");
+                var target_id = id.substring(id.indexOf("_") + 1);
+                $("#num_" + target_id).val(e.value);
+            })
+
+            /// <summary>
+            /// ネガポジ反転
+            /// </summary>
+            .on("click", "#btn_negapoji", function(){
+                image_convert.onNegapoji(); 
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                } else {
+                    $(this).addClass("active");
+                }
+            })
+            /// <summary>
+            /// 初期化
+            /// </summary>
+            .on("click", "#btn_initialize", function(){
+                image_convert.onInitialize();
+                $("[id^=btn_]").each(function () {
+                    if ($(this).hasClass("active")) {
+                        if ($(this).attr("id") != "btn_auto_apply") {
+                            $(this).removeClass("active");
+                        }
+                    }
+                });
+            })
+            /// <summary>
+            /// 水平フリップ
+            /// </summary>
+            .on("click", "#btn_horizontal_flip", function(){
+                image_convert.onHorizontalFlip(); 
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                } else {
+                    $(this).addClass("active");
+                }
+            })
+            /// <summary>
+            /// 垂直フリップ
+            /// </summary>
+            .on("click", "#btn_vertical_flip", function(){
+                image_convert.onVerticalFlip(); 
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                } else {
+                    $(this).addClass("active");
+                }
+            })
+            /// <summary>
+            /// 90°回転
+            /// </summary>
+            .on("click", "#btn_rotate90", function(){
+                image_convert.onRotate90();
+                if (_Rotate != 0) {
+                    $(this).addClass("active");
+                } else {
+                    $(this).removeClass("active");
+                }
+            })
+            /// <summary>
+            /// エッジ
+            /// </summary>
+            .on("click", "#btn_edge", function(){
+                image_convert.onEdgeDetector(); 
+            })
+            /// <summary>
+            /// グレースケール
+            /// </summary>
+            .on("click", "#btn_grayscale", function(){
+                image_convert.onGrayScale(); 
+            })
+            /// <summary>
+            /// セピア
+            /// </summary>
+            .on("click", "#btn_sepia", function(){
+                image_convert.onSepia(); 
+            })
+
+/* ペインター */
+            /// <summary>
+            /// マウス左クリック時
+            /// <param name="e">イベント</param>
+            /// </summary>
+            .on("mousedown", "#canvas_painter", function(e) {
+                painter.onClick(e);
+            })
+            /// <summary>
+            /// マウス移動時
+            /// <param name="e">イベント</param>
+            /// </summary>
+            .on("mousemove", "#canvas_painter", function(e) {
+                painter.onMove(e);
+            })
+            /// <summary>
+            /// マウスクリックを離した時
+            /// </summary>
+            .on("mouseup", "#canvas_painter", function() {
+                painter.drawEnd();
+            })
+            /// <summary>
+            /// マウスクリックを離した時
+            /// </summary>
+            .on("mouseout", "#canvas_painter", function() {
+                painter.drawEnd();
+            })
+            /// <summary>
+            /// ペインターメニュークリック時
+            /// </summary>
+            .on("click", ".painter-menuicon", function() {
+                painter.onMenuSelect($(this).attr("id"));
+            })
+
+            /* メニュー */
+            /// <summary>
+            /// ナビゲーションメニュークリック時
+            /// </summary>
+            .on("click", "[id^='link_nav_']", function () {
+                onNavigationSelect($(this).attr("id"));
+            });
+
+            /* ウィンドウ */
+            /// <summary>
+            /// リサイズ時
+            /// </summary>
+            $(window).on("resize", function () {
+                //TODO 動的に取得しているからか、高さや幅のリサイズスピードに追い付いてな誘うに見える
+                var container = document.getElementById("group_canvas");
+                var $container = $("#group_canvas");
+                var video = document.getElementById("video_video");
+                var canvas_video = document.getElementById("canvas_video");
+                var canvas_video_context = canvas_video.getContext("2d");
+                var canvas_painter = document.getElementById("canvas_painter");
+                var canvas_painter_context = canvas_painter.getContext("2d");
+                var scale = 1;
+
+                // コンテナサイズよりもビデオサイズの方が大きい場合
+                if (container.clientWidth < video.videoWidth) {
+                    // スケール調整値を計算
+                    scale = container.clientWidth / video.videoWidth;
+
+                    // コンテナの高さをビデオの高さ × スケール調整値 で計算して設定
+                    $container.height(video.videoHeight * scale + 50);
+
+                    // canvasサイズをコンテナに合わせる
+                    canvas_video.height = canvas_painter.height = container.clientHeight - 50;
+                    canvas_video.width = canvas_painter.width = container.clientWidth;
+                } else {
+                    canvas_video_context.scale(1 / _PreScale, 1 / _PreScale);
+                }
+
+                // 調整したスケールで再描写するために、現在の描写をクリア
+                canvas_video_context.clearRect(0, 0, canvas_video.width, canvas_video.height);
+                canvas_video_context.scale(_PreScale, _PreScale);
+                canvas_painter_context.clearRect(0, 0, canvas_painter.width, canvas_painter.height);
+            });
+
+        /*********************************************
+        * function
+        *********************************************/
+        /// <summary>
+        /// メニュー選択
+        /// </summary>
+        function onNavigationSelect(nav_id) {
+            // メニューの選択状態を解除
+            $("[id^='link_nav_']").removeClass("active");
+
+            // 選択したメニューをActiveに
+            $("#" + nav_id).addClass("active");
+
+            // 選択したメニューのコントロールを表示する（それ以外は非表示に）
+            var menu_name = nav_id.substring(nav_id.lastIndexOf("_") + 1, nav_id.length);
+            $("[id^='group_ctrl_']").addClass("d-none");
+            $("#group_ctrl_" + menu_name).removeClass("d-none");
+        }
+        </script>
+    </body>
+</html>

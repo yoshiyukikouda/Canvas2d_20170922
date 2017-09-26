@@ -1,0 +1,74 @@
+#group_canvas {
+    width: 100%;
+    height: 550px; 
+    position: relative;
+}
+
+#canvas_video,
+#canvas_painter {
+    position: absolute;
+    margin: auto;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+#group_paitermenu > .painter-menuicon {
+    height: 20px;
+    width: 20px;
+    background-color: #ddd;
+    float: right;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 10px;
+    margin: 2px;
+}
+
+#group_paitermenu > #painter_colore91e63 { 
+    background-color: #e91e63;
+}
+#group_paitermenu > #painter_colorffeb3b {
+    background-color: #ffeb3b;
+}
+#group_paitermenu > #painter_colorff4801 {
+    background-color: #ff4801;
+}
+#group_paitermenu > #painter_color536dfe {
+    background-color: #536dfe;
+}
+#group_paitermenu > #painter_color009688 {
+    background-color: #009688;
+}
+#group_paitermenu > #painter_color00e676 {
+    background-color: #00e676;
+}
+#group_paitermenu > #painter_color555555 {
+    background-color: #555555;
+}
+#group_paitermenu > #painter_alpha10 {
+    background-color: rgba(255, 72,1, 1.0);
+}
+#group_paitermenu > #painter_alpha6 {
+    background-color: rgba(255, 72,1, 0.6);
+}
+#group_paitermenu > #painter_alpha3 {
+    background-color: rgba(255, 72,1, 0.3);
+}
+#group_paitermenu > #painter_alpha1 {
+    background-color: rgba(255, 72,1, 0.1);
+}
+
+.slider-selection {
+    background: #BABABA;
+}
+
+.slider.slider-horizontal {
+    width : 110px;
+}
+
+.btn-group-top > button {
+    height: 50px;
+    width : 120px;
+}
